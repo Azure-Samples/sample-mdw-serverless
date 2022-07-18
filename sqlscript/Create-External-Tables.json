@@ -1,0 +1,21 @@
+{
+	"name": "Create-External-Tables",
+	"properties": {
+		"description": "creating gold tables",
+		"folder": {
+			"name": "factories"
+		},
+		"content": {
+			"query": "IF NOT EXISTS (SELECT * FROM sys.external_file_formats WHERE name = 'SynapseParquetFormat') \n\tCREATE EXTERNAL FILE FORMAT [SynapseParquetFormat] \n\tWITH ( FORMAT_TYPE = PARQUET)\nGO\n\n\nIF NOT EXISTS (SELECT * FROM sys.external_data_sources WHERE name = 'gold_factories') \n\tCREATE EXTERNAL DATA SOURCE [gold_factories] \n\tWITH (\n\t\tLOCATION = 'abfss://gold@medalionlake<suffix>.dfs.core.windows.net' \n\t)\nGO\n\n-- Create a table to be used by power bi, the simple query is used just as reference\n\nCREATE EXTERNAL TABLE sampletable1\n    WITH (\n        LOCATION = 'sampletable1/',  \n        DATA_SOURCE = [gold_factories],\n        FILE_FORMAT = [SynapseParquetFormat]  \n)\n    AS \n\tselect * \n\tFROM\n    OPENROWSET(\n        BULK 'https://medalionlake<suffix>.dfs.core.windows.net/silver/factory=1354010702/**',\n        FORMAT = 'PARQUET'\n    ) AS [result]\n\n\nselect count(*) from sampletable1\n\n",
+			"metadata": {
+				"language": "sql"
+			},
+			"currentConnection": {
+				"databaseName": "factories",
+				"poolName": "Built-in"
+			},
+			"resultLimit": -1
+		},
+		"type": "SqlQuery"
+	}
+}

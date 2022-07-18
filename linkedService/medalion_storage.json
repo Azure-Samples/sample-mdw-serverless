@@ -1,0 +1,20 @@
+{
+	"name": "medalion_storage",
+	"properties": {
+		"parameters": {
+			"suffix": {
+				"type": "String"
+			}
+		},
+		"annotations": [],
+		"type": "AzureBlobFS",
+		"typeProperties": {
+			"url": "@{concat('https://medalionlake',linkedService().suffix, '.dfs.core.windows.net/') }"
+		},
+		"connectVia": {
+			"referenceName": "AutoResolveIntegrationRuntime",
+			"type": "IntegrationRuntimeReference"
+		}
+	},
+	"type": "Microsoft.Synapse/workspaces/linkedservices"
+}

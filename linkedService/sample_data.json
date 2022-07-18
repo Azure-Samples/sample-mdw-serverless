@@ -1,0 +1,12 @@
+{
+	"name": "sample_data",
+	"properties": {
+		"annotations": [],
+		"type": "HttpServer",
+		"typeProperties": {
+			"url": "https://raw.githubusercontent.com/MSFT-FTA-EMEA-ISV/sample-mdw-serverless/main/sample_data/bronze/",
+			"enableServerCertificateValidation": true,
+			"authenticationType": "Anonymous"
+		}
+	}
+}

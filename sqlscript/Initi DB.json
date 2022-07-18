@@ -1,0 +1,21 @@
+{
+	"name": "Initi DB",
+	"properties": {
+		"description": "Create DB, master key and scoped credentials.",
+		"folder": {
+			"name": "factories"
+		},
+		"content": {
+			"query": "\n-- Create a DB - run this statment first\nCREATE DATABASE factories\n-- Create Master Key (if not already created) \n-- Note: change to the created DB scope\nCREATE MASTER KEY ENCRYPTION BY PASSWORD = '<your strong password>';\n-- Create credentials\nCREATE DATABASE SCOPED CREDENTIAL [factories_cred]\nWITH IDENTITY='SHARED ACCESS SIGNATURE',  \nSECRET = '<your storage sas token>'",
+			"metadata": {
+				"language": "sql"
+			},
+			"currentConnection": {
+				"databaseName": "factories",
+				"poolName": "Built-in"
+			},
+			"resultLimit": 5000
+		},
+		"type": "SqlQuery"
+	}
+}

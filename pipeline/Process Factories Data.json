@@ -1,0 +1,390 @@
+{
+	"name": "Process Factories Data",
+	"properties": {
+		"activities": [
+			{
+				"name": "GetNewDroppedFiles",
+				"type": "Lookup",
+				"dependsOn": [],
+				"policy": {
+					"timeout": "7.00:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"source": {
+						"type": "JsonSource",
+						"storeSettings": {
+							"type": "AzureBlobFSReadSettings",
+							"recursive": true,
+							"wildcardFileName": "dropped_files.json",
+							"enablePartitionDiscovery": false
+						},
+						"formatSettings": {
+							"type": "JsonReadSettings"
+						}
+					},
+					"dataset": {
+						"referenceName": "dropped_file_list",
+						"type": "DatasetReference"
+					},
+					"firstRowOnly": false
+				}
+			},
+			{
+				"name": "Factory of Data Model 2",
+				"type": "ForEach",
+				"dependsOn": [
+					{
+						"activity": "GetNewDroppedFiles",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"userProperties": [],
+				"typeProperties": {
+					"items": {
+						"value": "@activity('GetNewDroppedFiles').output.value",
+						"type": "Expression"
+					},
+					"activities": [
+						{
+							"name": "Check if not Processed Model 2",
+							"description": "The update of control file when an entry is processed is out-of-scope for this sample. Once an entry is processed, the control file must be updated. ",
+							"type": "IfCondition",
+							"dependsOn": [],
+							"userProperties": [],
+							"typeProperties": {
+								"expression": {
+									"value": "@and(not(item().Processed), equals(item().DataModelName, 'data_model_2'))",
+									"type": "Expression"
+								},
+								"ifTrueActivities": [
+									{
+										"name": "Copy Bronze to Silver Model 2",
+										"description": "To keep this sample simple as possible, we will just copy data from bronze to silver without doing any data transformation.",
+										"type": "Copy",
+										"dependsOn": [],
+										"policy": {
+											"timeout": "7.00:00:00",
+											"retry": 0,
+											"retryIntervalInSeconds": 30,
+											"secureOutput": false,
+											"secureInput": false
+										},
+										"userProperties": [],
+										"typeProperties": {
+											"source": {
+												"type": "JsonSource",
+												"storeSettings": {
+													"type": "AzureBlobFSReadSettings",
+													"recursive": false,
+													"wildcardFolderPath": {
+														"value": "@item().FileLocation",
+														"type": "Expression"
+													},
+													"wildcardFileName": "*",
+													"enablePartitionDiscovery": false
+												},
+												"formatSettings": {
+													"type": "JsonReadSettings",
+													"compressionProperties": {
+														"type": "ZipDeflateReadSettings",
+														"preserveZipFileNameAsFolder": false
+													}
+												}
+											},
+											"sink": {
+												"type": "ParquetSink",
+												"storeSettings": {
+													"type": "AzureBlobFSWriteSettings",
+													"copyBehavior": "FlattenHierarchy"
+												},
+												"formatSettings": {
+													"type": "ParquetWriteSettings"
+												}
+											},
+											"enableStaging": false,
+											"translator": {
+												"type": "TabularTranslator",
+												"mappings": [
+													{
+														"source": {
+															"path": "$['dataModelName']"
+														},
+														"sink": {
+															"name": "dataModelName",
+															"type": "String"
+														}
+													},
+													{
+														"source": {
+															"path": "$['operation']"
+														},
+														"sink": {
+															"name": "operation",
+															"type": "String"
+														}
+													},
+													{
+														"source": {
+															"path": "$['data']['factory']"
+														},
+														"sink": {
+															"name": "factory",
+															"type": "Int32"
+														}
+													},
+													{
+														"source": {
+															"path": "$['data']['lineId']"
+														},
+														"sink": {
+															"name": "lineId",
+															"type": "Int32"
+														}
+													},
+													{
+														"source": {
+															"path": "$['data']['date']"
+														},
+														"sink": {
+															"name": "date",
+															"type": "DateTime"
+														}
+													},
+													{
+														"source": {
+															"path": "$['data']['feature1']"
+														},
+														"sink": {
+															"name": "feature1",
+															"type": "Int32"
+														}
+													},
+													{
+														"source": {
+															"path": "$['data']['dim']"
+														},
+														"sink": {
+															"name": "dim",
+															"type": "Int32"
+														}
+													},
+													{
+														"source": {
+															"path": "$['data']['yield']"
+														},
+														"sink": {
+															"name": "yield",
+															"type": "Int32"
+														}
+													}
+												],
+												"collectionReference": "",
+												"mapComplexValuesToString": false
+											}
+										},
+										"inputs": [
+											{
+												"referenceName": "bronze",
+												"type": "DatasetReference"
+											}
+										],
+										"outputs": [
+											{
+												"referenceName": "silver_data",
+												"type": "DatasetReference"
+											}
+										]
+									}
+								]
+							}
+						}
+					]
+				}
+			},
+			{
+				"name": "Factory of Data Model 1",
+				"type": "ForEach",
+				"dependsOn": [
+					{
+						"activity": "GetNewDroppedFiles",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"userProperties": [],
+				"typeProperties": {
+					"items": {
+						"value": "@activity('GetNewDroppedFiles').output.value",
+						"type": "Expression"
+					},
+					"activities": [
+						{
+							"name": "Check not if Processed Model 2",
+							"description": "The update of control file when an entry is processed is out-of-scope for this sample. Once an entry is processed, the control file must be updated. ",
+							"type": "IfCondition",
+							"dependsOn": [],
+							"userProperties": [],
+							"typeProperties": {
+								"expression": {
+									"value": "@and(not(item().Processed), equals(item().DataModelName, 'data_model_1'))",
+									"type": "Expression"
+								},
+								"ifTrueActivities": [
+									{
+										"name": "Copy Bronze to Silver Model 1",
+										"description": "To keep this sample simple as possible, we will just copy data from bronze to silver without doing any data transformation.",
+										"type": "Copy",
+										"dependsOn": [],
+										"policy": {
+											"timeout": "7.00:00:00",
+											"retry": 0,
+											"retryIntervalInSeconds": 30,
+											"secureOutput": false,
+											"secureInput": false
+										},
+										"userProperties": [],
+										"typeProperties": {
+											"source": {
+												"type": "JsonSource",
+												"storeSettings": {
+													"type": "AzureBlobFSReadSettings",
+													"recursive": false,
+													"wildcardFolderPath": {
+														"value": "@item().FileLocation",
+														"type": "Expression"
+													},
+													"wildcardFileName": "*",
+													"enablePartitionDiscovery": false
+												},
+												"formatSettings": {
+													"type": "JsonReadSettings",
+													"compressionProperties": {
+														"type": "ZipDeflateReadSettings",
+														"preserveZipFileNameAsFolder": false
+													}
+												}
+											},
+											"sink": {
+												"type": "ParquetSink",
+												"storeSettings": {
+													"type": "AzureBlobFSWriteSettings",
+													"copyBehavior": "FlattenHierarchy"
+												},
+												"formatSettings": {
+													"type": "ParquetWriteSettings"
+												}
+											},
+											"enableStaging": false,
+											"translator": {
+												"type": "TabularTranslator",
+												"mappings": [
+													{
+														"source": {
+															"path": "$['dataModelName']"
+														},
+														"sink": {
+															"name": "dataModelName",
+															"type": "String"
+														}
+													},
+													{
+														"source": {
+															"path": "$['operation']"
+														},
+														"sink": {
+															"name": "operation",
+															"type": "String"
+														}
+													},
+													{
+														"source": {
+															"path": "$['data']['factory']"
+														},
+														"sink": {
+															"name": "factory",
+															"type": "Int32"
+														}
+													},
+													{
+														"source": {
+															"path": "$['data']['lineId']"
+														},
+														"sink": {
+															"name": "lineId",
+															"type": "Int32"
+														}
+													},
+													{
+														"source": {
+															"path": "$['data']['date']"
+														},
+														"sink": {
+															"name": "date",
+															"type": "DateTime"
+														}
+													},
+													{
+														"source": {
+															"path": "$['data']['feature1']"
+														},
+														"sink": {
+															"name": "feature1",
+															"type": "Int32"
+														}
+													},
+													{
+														"source": {
+															"path": "$['data']['dim']"
+														},
+														"sink": {
+															"name": "dim",
+															"type": "Int32"
+														}
+													},
+													{
+														"source": {
+															"path": "$['data']['yield']"
+														},
+														"sink": {
+															"name": "yield",
+															"type": "Int32"
+														}
+													}
+												],
+												"collectionReference": "",
+												"mapComplexValuesToString": false
+											}
+										},
+										"inputs": [
+											{
+												"referenceName": "bronze",
+												"type": "DatasetReference"
+											}
+										],
+										"outputs": [
+											{
+												"referenceName": "silver_data",
+												"type": "DatasetReference"
+											}
+										]
+									}
+								]
+							}
+						}
+					]
+				}
+			}
+		],
+		"annotations": [],
+		"lastPublishTime": "2022-07-05T10:55:15Z"
+	},
+	"type": "Microsoft.Synapse/workspaces/pipelines"
+}

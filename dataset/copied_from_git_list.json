@@ -1,0 +1,18 @@
+{
+	"name": "copied_from_git_list",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "medalion_storage",
+			"type": "LinkedServiceReference"
+		},
+		"annotations": [],
+		"type": "Json",
+		"typeProperties": {
+			"location": {
+				"type": "AzureBlobFSLocation",
+				"fileSystem": "bronze"
+			}
+		},
+		"schema": {}
+	}
+}

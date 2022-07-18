@@ -1,0 +1,17 @@
+{
+	"name": "dropped_files",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "medalion_storage",
+			"type": "LinkedServiceReference"
+		},
+		"annotations": [],
+		"type": "Binary",
+		"typeProperties": {
+			"location": {
+				"type": "AzureBlobFSLocation",
+				"fileSystem": "bronze"
+			}
+		}
+	}
+}
