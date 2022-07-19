@@ -44,6 +44,8 @@ The following are the prerequisites for deploying this sample :
 - [Azure CLI](https://docs.microsoft.com/en-us/dotnet/azure/install-azure-cli/)
 - [Bicep](https://docs.microsoft.com/en-us/azure/azure-resource-manager/bicep/install/)
 - [Power BI Desktop](https://powerbi.microsoft.com/en-gb/desktop/)
+ 
+> Note: Using PowerBI is an optional way to visulize data.
 
 ### Setup and deployment
 
@@ -54,6 +56,8 @@ The following are the prerequisites for deploying this sample :
 3. Edit ```deploy/bicep/param.json``` file and provide your values, they should be self explained.
 
     > Note: The ```suffix``` will be used to create the synapse and the storage instances with a unique namespace in Azure. If the suffix is already in use, please choose another one.
+
+    > Another Note: The default setup is for publicly open solution. This is the reason start and stop IPs allow for any IP address access to Synapse.
 
 4. Open a command line, go to  'sample-mdw-serverless/deploy/bicep' and run ```az deployment group create --resource-group <your rg name> --template-file main.bicep --parameters @param.json``` on the 'bicep' folder. This operation may take a few minutes to complete.
 

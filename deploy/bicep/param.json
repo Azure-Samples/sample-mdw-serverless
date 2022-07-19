@@ -18,10 +18,10 @@
         "value": "https://{0}.dfs.core.windows.net"
       },
       "endIpAddress":{
-        "value": "<your end ip>"
+        "value": "255.255.255.255"
       },
       "startIpAddress":{
-        "value": "<your start ip>"
+        "value": "0.0.0.0"
       }
     }
   }
