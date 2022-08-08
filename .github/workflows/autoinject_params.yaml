@@ -1,0 +1,35 @@
+name: Auto-inject ADF parameters
+
+on:
+  push:
+    branches: ["workspace_publish"]
+
+env:
+  TEMPLATE_FILE: ./medalionsynapse12/TemplateForWorkspace.json
+  PARAM_FILE: ./medalionsynapse12/TemplateParametersForWorkspace.json
+  OUTPUT_FILE: ./injected_params/MedalionParams.json
+
+jobs:
+  inject-params:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - uses: actions/setup-python@v2
+        with:
+          python-version: 3.9
+      - name: Configure git client
+        run: |
+          git config user.name "GitHub Param Auto-Inject Action"
+          git config user.email "autoinjectaction@github.com"
+          mkdir -p injected_params
+      - name: Run parameters merge script
+        run: |
+          python3 ./scripts/autoinject_params.py \
+            --template-file $TEMPLATE_FILE \
+            --param-file $PARAM_FILE \
+            --output-file $OUTPUT_FILE
+      - name: Commit changes
+        run: |
+          git add $OUTPUT_FILE
+          git commit -m "Auto-inject parameters"
+          git push origin workspace_publish
