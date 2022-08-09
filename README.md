@@ -70,6 +70,8 @@ The following are the prerequisites for deploying this sample :
     ![linked service](./images/linked_service_update.png)
 
 8. Run the 'Copy Data Samples' pipeline. This will copy the [control file](#control/table) and the [data samples](#sample-files) to your local repository. [See details.](#sample-files)
+     > Note: You can use the ```Debug``` to get started quickly, or setup a trigger as described [here](https://docs.microsoft.com/en-us/azure/data-factory/concepts-pipeline-execution-triggers).
+
 
 9. Run the 'Process Factories Data'. This will run the Bronze to Silver transformations per factory and per data model. [See details.](#bronze-to-silver)
 
