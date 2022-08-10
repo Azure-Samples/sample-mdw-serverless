@@ -1,7 +1,7 @@
 # Automated CI/CD Pipeline
 
 The goal behind the automation of the CI/CD pipeline is to be able
-to spread the Synapse Analytics Pipeline in different environments
+to provision the Synapse Analytics Pipeline in different environments
 with the ability to override the parameters used by the pipeline.
 These parameters are used both in the pipeline itself _and_ the
 initialization SQL scripts that are triggered in the workspace.
@@ -9,9 +9,9 @@ initialization SQL scripts that are triggered in the workspace.
 To date, Azure Synapse Analytics doesn't support the interpolation
 of parameters in workspace initialization scripts. For this reason,
 this repository includes a custom GitHub Workflow that scans for
-references to parameters (with the `@parameters('key')` notation)
+references to parameters (with the `parameters('key')` notation)
 in the pipeline's ARM template and dynamically adds them to the
-parameters file. This automation allows you to spread the pipeline
+parameters file. This automation allows you to provision the pipeline
 in new environments (e.g., Test -> Staging -> Prod) while ensuring
 all parameter substitutions are respected.
 
