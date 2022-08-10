@@ -72,6 +72,7 @@ The following are the prerequisites for deploying this sample :
 8. Run the 'Copy Data Samples' pipeline. This will copy the [control file](#control/table) and the [data samples](#sample-files) to your local repository. [See details.](#sample-files)
      > Note: You can use the ```Debug``` to get started quickly, or setup a trigger as described [here](https://docs.microsoft.com/en-us/azure/data-factory/concepts-pipeline-execution-triggers).
 
+
 9. Run the 'Process Factories Data'. This will run the Bronze to Silver transformations per factory and per data model. [See details.](#bronze-to-silver)
 
 10. Go to and Develop > SQL Scrips > Factories and open the ```InitDB``` script.
@@ -84,7 +85,7 @@ The following are the prerequisites for deploying this sample :
 
 14. Open Power BI Desktop and follow the steps in this [document](https://docs.microsoft.com/en-us/power-apps/maker/data-platform/export-to-data-lake-data-powerbi#prerequisites) to connect your Gold Data Lake storage to Power BI Desktop.
 
-15. Optionally, you can set up an automated DevOps pipeline using [these instructions](./deploy/DevOps/README.md).
+15. Optionally, you can set up an automated DevOps pipeline using [these instructions](./deploy/README.md).
 
 ## Details
 
