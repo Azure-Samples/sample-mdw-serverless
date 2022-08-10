@@ -44,7 +44,7 @@ The following are the prerequisites for deploying this sample :
 - [Azure CLI](https://docs.microsoft.com/en-us/dotnet/azure/install-azure-cli/)
 - [Bicep](https://docs.microsoft.com/en-us/azure/azure-resource-manager/bicep/install/)
 - [Power BI Desktop](https://powerbi.microsoft.com/en-gb/desktop/)
- 
+
 > Note: Using PowerBI is an optional way to visulize data.
 
 ### Setup and deployment
@@ -85,7 +85,7 @@ The following are the prerequisites for deploying this sample :
 
 14. Open Power BI Desktop and follow the steps in this [document](https://docs.microsoft.com/en-us/power-apps/maker/data-platform/export-to-data-lake-data-powerbi#prerequisites) to connect your Gold Data Lake storage to Power BI Desktop.
 
-15. Optionally, you can set up an automated DevOps pipeline using [these instructions](./deploy/README.md).
+15. Optionally, you can set up an automated DevOps pipeline using [these instructions](./deploy/DevOps/README.md).
 
 ## Details
 

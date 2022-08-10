@@ -58,7 +58,6 @@ git push origin workspace_publish
 
 ## Validate the Workflow
 
- 
 The name of the directory under the `workspace_publish` branch that
 Azure Synapse Analytics will create is derived from the workspace name
 (e.g., `./medalionsynapse12`).
@@ -84,3 +83,61 @@ navigate to the **Actions** tab in the GitHub repository and observe
 the status of the Action run:
 
 ![GitHub Action](./gh_action.png)
+
+## Create CI/CD Pipelines
+
+This article outlines how to use an Azure DevOps pipelines and GitHub Actions to automate the deployment of the Azure Synapse workspace to another environment.
+
+### Prerequisites
+
+1. Prepare an Azure DevOps project for running the CI/CD pipelines.
+
+1. Create a new Azure Synapse workspace, a blank workspace to deploy to.
+
+1. Grant the necessary permissions. [More information here.](https://docs.microsoft.com/en-us/azure/synapse-analytics/cicd/continuous-integration-delivery#azure-synapse-analytics)
+
+#### CI pipeline
+
+Follow the steps bellow to create your CI pipeline:
+
+1. In Azure [DevOps](https://dev.azure.com/), open the project you created for the release.
+
+1. On the left menu, select **Pipelines > Pipelines**.
+
+1. Create a new pipeline with Github as source and select your repository and the default build branch.
+    ![pipeline_source](./pipeline_source.PNG)
+
+1. Add tasks to the Stage View, one to download Pipeline Artifact and other to publish Pipeline Artifact.
+    ![pipeline_tasks](./pipeline_tasks.PNG)
+
+1. Configure the pipeline trigger. Enable continuos integration and set the Branch and Path filters.
+    ![pipeline_tasks](./build_pipeline_triggers.PNG)
+
+1. Run the pipeline. This will prepare the artifact for deployment.
+
+#### CD pipeline
+
+Follow the steps bellow to create your CD pipeline:
+
+1. In Azure [DevOps](https://dev.azure.com/), open the project you created for the release.
+
+1. On the left menu, select **Pipelines > Releases**.
+
+1. Create a new pipeline and start with an Empty job.
+
+1. Add the artifact and select your CI pipeline as source.
+
+1. In the stage view, select View stage tasks. Add a Synapse deployment task.
+    ![synapse_deployment](.\synapse_deployment.PNG)
+
+1. Override the parameters used by the pipeline _and_ the SQL scripts.
+
+    ![override_parameters](.\override_parameters.PNG)
+
+1. Configure the Continuous deployment trigger.
+
+    ![CD_pipeline_trigger](./CD_pipeline_trigger.PNG)
+
+1. Configure the Pre-deployment conditions.
+
+    ![pre_deployment_conditions](./pre_deployment_conditions.PNG)
