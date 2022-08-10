@@ -83,6 +83,8 @@ The following are the prerequisites for deploying this sample :
 
 14. Open Power BI Desktop and follow the steps in this [document](https://docs.microsoft.com/en-us/power-apps/maker/data-platform/export-to-data-lake-data-powerbi#prerequisites) to connect your Gold Data Lake storage to Power BI Desktop.
 
+15. Optionally, you can set up an automated DevOps pipeline using [these instructions](./deploy/README.md).
+
 ## Details
 
 ### Sample files

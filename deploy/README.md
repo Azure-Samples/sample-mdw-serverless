@@ -56,6 +56,24 @@ git commit -m "Add automation workflow"
 git push origin workspace_publish
 ```
 
+## Validate the Workflow
+
+ 
+The name of the directory under the `workspace_publish` branch that
+Azure Synapse Analytics will create is derived from the workspace name
+(e.g., `./medalionsynapse12`).
+
+If the directory created under that branch has a different name, you will
+need to change the values of the environment variables in the GitHub
+Workflow (`./.github/workflows/autoinject_params.yaml`), e.g.:
+
+```yaml
+env:
+  TEMPLATE_FILE: ./<TEMPLATES DIRECTORY>/TemplateForWorkspace.json
+  PARAM_FILE: ./<TEMPLATES DIRECTORY>/TemplateParametersForWorkspace.json
+  OUTPUT_FILE: ./injected_params/MedalionParams.json
+```
+
 ## Test the changes
 
 Once you've pushed the two automation files to the `workspace_publish`
@@ -66,4 +84,3 @@ navigate to the **Actions** tab in the GitHub repository and observe
 the status of the Action run:
 
 ![GitHub Action](./gh_action.png)
-
