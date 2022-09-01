@@ -94,10 +94,15 @@ The following are the prerequisites for deploying this sample :
 The sample files consist of daily dropped data in zip format. Each zip file contains a data file with a JSON per line.
 
 ```JSON
-{"dataModelName":"data_model_1","operation":"I","data":{"factory":1354010702,"lineId":15025,"date":"2022-06-24T00:00:00","feature1":0,"dim":0,"yield":5223}}
-{"dataModelName":"data_model_1","operation":"I","data":{"factory":1354010702,"lineId":15027,"date":"2022-06-24T00:00:00","feature1":0,"dim":0,"yield":865}}
-{"dataModelName":"data_model_2","operation":"U","data":{"factory":1354010702,"lineId":15043,"date":"2022-06-25T00:00:00","feature1":0,"dim":0,"yield":235}}
-{"dataModelName":"data_model_2","operation":"U","data":{"factory":1354010702,"lineId":15045,"date":"2022-06-25T00:00:00","feature1":0,"dim":0,"yield":325}}
+{"dataModelName":"data_model_1","operation":"U","factory":1354010702,"lineId":14871,"date":"2022-06-22T00:00:00","feature1":1,"dim":73,"yield":37307}
+{"dataModelName":"data_model_1","operation":"U","factory":1354010702,"lineId":14872,"date":"2022-06-22T00:00:00","feature1":1,"dim":73,"yield":37306}
+{"dataModelName":"data_model_1","operation":"U","factory":1354010702,"lineId":14873,"date":"2022-06-23T00:00:00","feature1":1,"dim":73,"yield":37305}
+{"dataModelName":"data_model_1","operation":"U","factory":1354010702,"lineId":14874,"date":"2022-06-23T00:00:00","feature1":1,"dim":73,"yield":37304}
+{"dataModelName":"data_model_1","operation":"U","factory":1354010702,"lineId":14875,"date":"2022-06-23T00:00:00","feature1":1,"dim":73,"yield":37303}
+{"dataModelName":"data_model_1","operation":"U","factory":1354010702,"lineId":14876,"date":"2022-06-24T00:00:00","feature1":1,"dim":73,"yield":37302}
+{"dataModelName":"data_model_1","operation":"U","factory":1354010702,"lineId":14877,"date":"2022-06-24T00:00:00","feature1":1,"dim":73,"yield":37307}
+{"dataModelName":"data_model_1","operation":"U","factory":1354010702,"lineId":14878,"date":"2022-06-24T00:00:00","feature1":1,"dim":73,"yield":37300}
+
 ```
 
 ### Control Table
@@ -135,6 +140,26 @@ Each type of file will have to be mapped at least once. While this process might
 ![mapping](./images/mapping.png)
 
 > As for time, in order to extract the nested JSON values you will have to map these values to a type in the Mapping tab of the Copy() activity.
+
+#### Using Azure Function
+
+In some cases daily files may contain previous dates of data. In such scenarios it is recomended to fix alter the directory structure, and reflect the right location/partition.
+
+Read more on this function [here](./functions/getting_started.md)
+
+When calling the azure function, you would need to have the following post payload defined in the activity, using the dynamic content.
+
+```json
+@concat('{',
+        '"file_name"',':','"',item().FileLocation,'/daily.zip"', ',',
+        '"source_container"',':','"',pipeline().parameters.source_container,'"', ',',
+        '"target_cs"',':','"',pipeline().parameters.target_container,'"', ',',
+        '"source_cs"',':','"',activity('Get CS from AKV').output.value,'"', ',',
+        '"target_cs"',':','"',activity('Get CS from AKV').output.value,'"',
+        '}'
+        )
+```
+
 
 #### Write to silver
 
