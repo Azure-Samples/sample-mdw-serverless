@@ -1,0 +1,10 @@
+{
+	"name": "medallion_kv_ls",
+	"properties": {
+		"annotations": [],
+		"type": "AzureKeyVault",
+		"typeProperties": {
+			"baseUrl": "https://medallion-keyvault.vault.azure.net/"
+		}
+	}
+}
