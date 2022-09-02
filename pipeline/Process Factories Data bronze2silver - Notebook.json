@@ -102,7 +102,7 @@
 													"type": "string"
 												},
 												"account_name": {
-													"value": "medalionlake33",
+													"value": "@{concat('medalionlake',replace(pipeline().DataFactory, 'medalionsynapse', ''))}",
 													"type": "string"
 												}
 											},
@@ -187,7 +187,7 @@
 													"type": "string"
 												},
 												"account_name": {
-													"value": "medalionlake33",
+													"value": "@{concat('medalionlake',replace(pipeline().DataFactory, 'medalionsynapse', ''))}",
 													"type": "string"
 												}
 											},

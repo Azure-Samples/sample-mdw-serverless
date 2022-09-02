@@ -118,7 +118,7 @@
 				"cell_type": "code",
 				"source": [
 					"# retrieve source storage connection string from key vault\r\n",
-					"source_cs = mssparkutils.credentials.getSecretWithLS('medallion_kv_ls', 'storage-cs')\r\n",
+					"source_cs = mssparkutils.credentials.getSecretWithLS('medallion_kv_ls', 'medallion-acc-cs')\r\n",
 					"\r\n",
 					"blob_service_client = BlobServiceClient.from_connection_string(source_cs)\r\n",
 					"blob_client = blob_service_client.get_container_client(source_container).get_blob_client(source_path)\r\n",
