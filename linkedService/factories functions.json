@@ -1,0 +1,17 @@
+{
+	"name": "factories functions",
+	"type": "Microsoft.Synapse/workspaces/linkedservices",
+	"properties": {
+		"annotations": [],
+		"type": "AzureFunction",
+		"typeProperties": {
+			"functionAppUrl": "parameters('function_url)",
+			"authentication": "Anonymous",
+			"encryptedCredential": "parameters('function_key)"
+		},
+		"connectVia": {
+			"referenceName": "AutoResolveIntegrationRuntime",
+			"type": "IntegrationRuntimeReference"
+		}
+	}
+}
