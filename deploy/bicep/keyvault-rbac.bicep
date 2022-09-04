@@ -100,8 +100,8 @@ resource ownerAssignment 'Microsoft.Authorization/roleAssignments@2020-04-01-pre
   }
 }
 
-param accountKeySecretName string = 'medalion-acc-key'
-param accountConnStringSecretName string = 'medalion-acc-cs'
+param accountKeySecretName string = 'medallion-acc-key'
+param accountConnStringSecretName string = 'medallion-acc-cs'
 
 param accountKeySecretValue string
 param accountCSSecretValue string

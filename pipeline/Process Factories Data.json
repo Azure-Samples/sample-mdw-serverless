@@ -132,7 +132,7 @@
 													},
 													{
 														"source": {
-															"path": "$['data']['factory']"
+															"path": "$['factory']"
 														},
 														"sink": {
 															"name": "factory",
@@ -141,7 +141,7 @@
 													},
 													{
 														"source": {
-															"path": "$['data']['lineId']"
+															"path": "$['lineId']"
 														},
 														"sink": {
 															"name": "lineId",
@@ -150,7 +150,7 @@
 													},
 													{
 														"source": {
-															"path": "$['data']['date']"
+															"path": "$['date']"
 														},
 														"sink": {
 															"name": "date",
@@ -159,7 +159,7 @@
 													},
 													{
 														"source": {
-															"path": "$['data']['feature1']"
+															"path": "$['feature1']"
 														},
 														"sink": {
 															"name": "feature1",
@@ -168,7 +168,7 @@
 													},
 													{
 														"source": {
-															"path": "$['data']['dim']"
+															"path": "$['dim']"
 														},
 														"sink": {
 															"name": "dim",
@@ -177,7 +177,7 @@
 													},
 													{
 														"source": {
-															"path": "$['data']['yield']"
+															"path": "$['yield']"
 														},
 														"sink": {
 															"name": "yield",

@@ -1,0 +1,15 @@
+{
+	"name": "medallion_kv_ls",
+	"properties": {
+		"parameters": {
+			"suffix": {
+				"type": "String"
+			}
+		},
+		"annotations": [],
+		"type": "AzureKeyVault",
+		"typeProperties": {
+			"baseUrl": "@{concat('https://medallionakv',linkedService().suffix, '.vault.azure.net/') }"
+		}
+	}
+}

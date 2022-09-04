@@ -1,0 +1,151 @@
+{
+	"name": "Groupby data per month",
+	"properties": {
+		"nbformat": 4,
+		"nbformat_minor": 2,
+		"bigDataPool": {
+			"referenceName": "sparkpool",
+			"type": "BigDataPoolReference"
+		},
+		"sessionProperties": {
+			"driverMemory": "28g",
+			"driverCores": 4,
+			"executorMemory": "28g",
+			"executorCores": 4,
+			"numExecutors": 1,
+			"conf": {
+				"spark.dynamicAllocation.enabled": "false",
+				"spark.dynamicAllocation.minExecutors": "1",
+				"spark.dynamicAllocation.maxExecutors": "1",
+				"spark.autotune.trackingId": "2e282572-ca08-4b40-8fba-ef16042ab844"
+			}
+		},
+		"metadata": {
+			"saveOutput": true,
+			"enableDebugMode": false,
+			"kernelspec": {
+				"name": "synapse_pyspark",
+				"display_name": "Synapse PySpark"
+			},
+			"language_info": {
+				"name": "python"
+			},
+			"a365ComputeOptions": {
+				"id": "/subscriptions/d134efee-67e2-4db0-a253-903d6309fe47/resourceGroups/medallion_project/providers/Microsoft.Synapse/workspaces/medalionsynapse33/bigDataPools/sparkpool",
+				"name": "sparkpool",
+				"type": "Spark",
+				"endpoint": "https://medalionsynapse33.dev.azuresynapse.net/livyApi/versions/2019-11-01-preview/sparkPools/sparkpool",
+				"auth": {
+					"type": "AAD",
+					"authResource": "https://dev.azuresynapse.net"
+				},
+				"sparkVersion": "3.2",
+				"nodeCount": 10,
+				"cores": 4,
+				"memory": 28,
+				"automaticScaleJobs": false
+			},
+			"sessionKeepAliveTimeout": 10
+		},
+		"cells": [
+			{
+				"cell_type": "code",
+				"metadata": {
+					"jupyter": {
+						"source_hidden": false,
+						"outputs_hidden": false
+					},
+					"nteract": {
+						"transient": {
+							"deleting": false
+						}
+					}
+				},
+				"source": [
+					"import datetime\r\n",
+					"import json\r\n",
+					"import uuid\r\n",
+					"import zipfile\r\n",
+					"from azure.storage.blob import BlobServiceClient\r\n",
+					"from datetime import datetime as dt\r\n",
+					"from io import BytesIO\r\n",
+					"from notebookutils import mssparkutils"
+				],
+				"execution_count": 12
+			},
+			{
+				"cell_type": "code",
+				"metadata": {
+					"jupyter": {
+						"source_hidden": false,
+						"outputs_hidden": false
+					},
+					"nteract": {
+						"transient": {
+							"deleting": false
+						}
+					}
+				},
+				"source": [
+					"def get_unique_values_from_column(column: str, df) -> list:\r\n",
+					"    \"\"\"Returns a list of unique values from a given column\"\"\"\r\n",
+					"    return [ ele.__getattr__(column) for ele in df.select(column).distinct().collect()]"
+				],
+				"execution_count": 3
+			},
+			{
+				"cell_type": "code",
+				"metadata": {
+					"jupyter": {
+						"source_hidden": false,
+						"outputs_hidden": false
+					},
+					"nteract": {
+						"transient": {
+							"deleting": false
+						}
+					}
+				},
+				"source": [
+					"def create_target_path(factory_id: str, data_model_name: str,  date: str) -> str:\r\n",
+					"    \"\"\"Returns target path using factory, data model and date information\"\"\"\r\n",
+					"    dt_object = dt.strptime(date, \"%Y-%m-%dT%H:%M:%S\")\r\n",
+					"    return f\"/factory={factory_id}/dataModelName={data_model_name}/y={dt_object.year}/m={'%02d'% dt_object.month}/d={dt_object.day}/{uuid.uuid4()}.parquet\""
+				],
+				"execution_count": null
+			},
+			{
+				"cell_type": "code",
+				"source": [
+					"# retrieve source storage connection string from key vault\r\n",
+					"source_cs = mssparkutils.credentials.getSecretWithLS('medallion_kv_ls', 'medallion-acc-cs')\r\n",
+					"\r\n",
+					"blob_service_client = BlobServiceClient.from_connection_string(source_cs)\r\n",
+					"blob_client = blob_service_client.get_container_client(source_container).get_blob_client(source_path)\r\n",
+					"\r\n",
+					"# read zip file into a buffer\r\n",
+					"with BytesIO() as buffer:\r\n",
+					"    blob_client.download_blob(0).readinto(buffer)\r\n",
+					"    # open buffer as zip file\r\n",
+					"    with zipfile.ZipFile(buffer, compression=zipfile.ZIP_DEFLATED) as z:\r\n",
+					"        filename = z.namelist()[0]\r\n",
+					"        with z.open(filename, mode='r') as f:\r\n",
+					"            new_lines = [json.loads(line.decode()) for line in f.readlines() if line]\r\n",
+					"\r\n",
+					"# load list of json objects into dataframe                            \r\n",
+					"df = spark.createDataFrame(new_lines)\r\n",
+					"# get unique list of values from column used to groupby the data \r\n",
+					"unique_dates = get_unique_values_from_column('date', df)\r\n",
+					"\r\n",
+					"# go through unique values and save data in the corresponding target folder.\r\n",
+					"# this will split the initial dataframe in multiple dataframes in case we have multiple values   \r\n",
+					"for date in unique_dates:\r\n",
+					"    new_df = df.where(df.date == date)\r\n",
+					"    new_df.write.parquet(f\"abfss://silver@{account_name}.dfs.core.windows.net{create_target_path(factory_id, data_model_name, date)}\")\r\n",
+					""
+				],
+				"execution_count": 32
+			}
+		]
+	}
+}
