@@ -6,7 +6,7 @@
 			"name": "factories"
 		},
 		"content": {
-			"query": "\n-- Create a DB - run this statment first\nCREATE DATABASE factories\n-- Create Master Key (if not already created) \n-- Note: change to the created DB scope\nCREATE MASTER KEY ENCRYPTION BY PASSWORD = '<your strong password>';\n-- Create credentials\nCREATE DATABASE SCOPED CREDENTIAL [factories_cred]\nWITH IDENTITY='SHARED ACCESS SIGNATURE',  \nSECRET = '<your storage sas token>'",
+			"query": "\n-- Create a DB - run this statment first\nCREATE DATABASE factories\n-- Create Master Key (if not already created) \n-- Note: change to the created DB scope\nCREATE MASTER KEY ENCRYPTION BY PASSWORD = parameters('sql_password');\n-- Create credentials\nCREATE DATABASE SCOPED CREDENTIAL [factories_cred]\nWITH IDENTITY='SHARED ACCESS SIGNATURE',  \n\nSECRET = parameters('your_sas_token')",
 			"metadata": {
 				"language": "sql"
 			},
