@@ -1,0 +1,55 @@
+{
+	"name": "AzureSqlTable1",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "SQL on Demand",
+			"type": "LinkedServiceReference"
+		},
+		"annotations": [],
+		"type": "AzureSqlTable",
+		"schema": [
+			{
+				"name": "dataModelName",
+				"type": "varchar"
+			},
+			{
+				"name": "operation",
+				"type": "varchar"
+			},
+			{
+				"name": "factory",
+				"type": "int",
+				"precision": 10
+			},
+			{
+				"name": "lineId",
+				"type": "int",
+				"precision": 10
+			},
+			{
+				"name": "date",
+				"type": "datetime2",
+				"scale": 7
+			},
+			{
+				"name": "feature1",
+				"type": "int",
+				"precision": 10
+			},
+			{
+				"name": "dim",
+				"type": "int",
+				"precision": 10
+			},
+			{
+				"name": "yield",
+				"type": "int",
+				"precision": 10
+			}
+		],
+		"typeProperties": {
+			"schema": "",
+			"table": ""
+		}
+	}
+}

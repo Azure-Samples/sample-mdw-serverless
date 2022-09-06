@@ -1,0 +1,19 @@
+{
+	"name": "SQL on Demand",
+	"properties": {
+		"parameters": {
+			"suffix": {
+				"type": "string"
+			}
+		},
+		"annotations": [],
+		"type": "AzureSqlDatabase",
+		"typeProperties": {
+			"connectionString": "Integrated Security=False;Encrypt=True;Connection Timeout=30;Data Source=\"@{concat(\n    'medalionsynapse', \n    linkedService().suffix,\n    '-ondemand.sql.azuresynapse.net'\n)}\";Initial Catalog=factories"
+		},
+		"connectVia": {
+			"referenceName": "AutoResolveIntegrationRuntime",
+			"type": "IntegrationRuntimeReference"
+		}
+	}
+}
