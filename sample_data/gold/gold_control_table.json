@@ -1,0 +1,16 @@
+[        
+    {
+		"description": "Create view of all data from 06/2022",
+        "dataModelName": "dataModelName=data_model_1",
+        "year": "y=2022",
+		"month": "m=06",
+		"targetFolder": "y=2022/m=06"
+    },
+	{
+		"description": "Create view of all data from month 06",
+        "dataModelName": "dataModelName=data_model_1",
+        "year": "*",
+		"month": "m=06",
+		"targetFolder": "y=2022/m=06"
+    }
+]
