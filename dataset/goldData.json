@@ -1,0 +1,56 @@
+{
+	"name": "goldData",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "medalion_storage",
+			"type": "LinkedServiceReference"
+		},
+		"annotations": [],
+		"type": "Parquet",
+		"typeProperties": {
+			"location": {
+				"type": "AzureBlobFSLocation",
+				"folderPath": {
+					"value": "@item().targetFolder",
+					"type": "Expression"
+				},
+				"fileSystem": "gold"
+			},
+			"compressionCodec": "snappy"
+		},
+		"schema": [
+			{
+				"name": "dataModelName",
+				"type": "UTF8"
+			},
+			{
+				"name": "operation",
+				"type": "UTF8"
+			},
+			{
+				"name": "factory",
+				"type": "INT_32"
+			},
+			{
+				"name": "lineId",
+				"type": "INT_32"
+			},
+			{
+				"name": "date",
+				"type": "TIMESTAMP_MICROS"
+			},
+			{
+				"name": "feature1",
+				"type": "INT_32"
+			},
+			{
+				"name": "dim",
+				"type": "INT_32"
+			},
+			{
+				"name": "yield",
+				"type": "INT_32"
+			}
+		]
+	}
+}

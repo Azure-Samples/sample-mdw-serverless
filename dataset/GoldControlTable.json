@@ -1,0 +1,38 @@
+{
+	"name": "GoldControlTable",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "medalion_storage",
+			"type": "LinkedServiceReference"
+		},
+		"annotations": [],
+		"type": "Json",
+		"typeProperties": {
+			"location": {
+				"type": "AzureBlobFSLocation",
+				"fileName": "gold_control_table.json",
+				"fileSystem": "gold"
+			}
+		},
+		"schema": {
+			"type": "object",
+			"properties": {
+				"DataModelName": {
+					"type": "string"
+				},
+				"monthsToCalculate": {
+					"type": "array",
+					"items": {
+						"type": "string"
+					}
+				},
+				"yearsToCalculate": {
+					"type": "array",
+					"items": {
+						"type": "string"
+					}
+				}
+			}
+		}
+	}
+}

@@ -1,0 +1,61 @@
+{
+	"name": "Main Pipeline",
+	"properties": {
+		"activities": [
+			{
+				"name": "Copy Input Data Samples",
+				"type": "ExecutePipeline",
+				"dependsOn": [],
+				"userProperties": [],
+				"typeProperties": {
+					"pipeline": {
+						"referenceName": "Copy  Data Samples",
+						"type": "PipelineReference"
+					},
+					"waitOnCompletion": true
+				}
+			},
+			{
+				"name": "bronze2silver",
+				"type": "ExecutePipeline",
+				"dependsOn": [
+					{
+						"activity": "Copy Input Data Samples",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"userProperties": [],
+				"typeProperties": {
+					"pipeline": {
+						"referenceName": "bronze2silver - Notebook",
+						"type": "PipelineReference"
+					},
+					"waitOnCompletion": true
+				}
+			},
+			{
+				"name": "silver2gold",
+				"type": "ExecutePipeline",
+				"dependsOn": [
+					{
+						"activity": "bronze2silver",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"userProperties": [],
+				"typeProperties": {
+					"pipeline": {
+						"referenceName": "silver2gold - SQL onDemand",
+						"type": "PipelineReference"
+					},
+					"waitOnCompletion": true
+				}
+			}
+		],
+		"annotations": []
+	}
+}
