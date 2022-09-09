@@ -176,7 +176,10 @@
 				},
 				"userProperties": [],
 				"typeProperties": {
-					"url": "https://medalionakv12.vault.azure.net/secrets/medalion-acc-cs?api-version=7.0",
+					"url": {
+						"value": "@concat(\n    'https://medallionakv',\n    replace(pipeline().DataFactory, 'medalionsynapse', ''),\n    '.vault.azure.net/secrets/medallion-acc-cs?api-version=7.0')\n\n",
+						"type": "Expression"
+					},
 					"connectVia": {
 						"referenceName": "AutoResolveIntegrationRuntime",
 						"type": "IntegrationRuntimeReference"
