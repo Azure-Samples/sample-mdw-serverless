@@ -1,5 +1,5 @@
 {
-	"name": "Process Factories Data bronze2silver with azure function",
+	"name": "bronze2silver - Azure Function",
 	"properties": {
 		"activities": [
 			{
