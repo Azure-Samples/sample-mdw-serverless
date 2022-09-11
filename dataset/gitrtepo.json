@@ -11,7 +11,7 @@
 			"location": {
 				"type": "HttpServerLocation",
 				"relativeUrl": {
-					"value": "@concat(item().FileLocation, '/daily.zip')",
+					"value": "@concat('bronze/', item().FileLocation, '/daily.zip')",
 					"type": "Expression"
 				}
 			}

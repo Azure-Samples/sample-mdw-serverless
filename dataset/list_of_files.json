@@ -10,7 +10,10 @@
 		"typeProperties": {
 			"location": {
 				"type": "HttpServerLocation",
-				"relativeUrl": "dropped_files.json"
+				"relativeUrl": {
+					"value": "@concat(item().target_container, '/', item().file) ",
+					"type": "Expression"
+				}
 			}
 		},
 		"schema": {}

@@ -9,8 +9,7 @@
 		"type": "Binary",
 		"typeProperties": {
 			"location": {
-				"type": "AzureBlobFSLocation",
-				"fileSystem": "bronze"
+				"type": "AzureBlobFSLocation"
 			}
 		}
 	}

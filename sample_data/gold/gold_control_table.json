@@ -11,6 +11,6 @@
         "dataModelName": "dataModelName=data_model_1",
         "year": "*",
 		"month": "m=06",
-		"targetFolder": "y=2022/m=06"
+		"targetFolder": "m=06"
     }
 ]
