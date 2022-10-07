@@ -145,9 +145,9 @@ Each type of file will have to be mapped at least once. While this process might
 
 In some cases daily files may contain previous dates of data. In such scenarios it is recomended to fix alter the directory structure, and reflect the right location/partition.
 
-Read more on this function [here](./functions/getting_started.md)
+Read more on this function [here](./functions/getting_started.md).
 
-When calling the azure function, you would need to have the following post payload defined in the activity, using the dynamic content.
+When calling the azure function ('bronze2silver - Azure Function' Pipeline), you would need to have the following post payload defined in the activity, using the dynamic content.
 
 ```json
 @concat('{',
@@ -160,6 +160,9 @@ When calling the azure function, you would need to have the following post paylo
         )
 ```
 
+#### Using Notebook (Spark Pool)
+
+Alternatively to the Azure Fuction, there is also the option to leverage a Notebook ('bronze2silver - Notebook' Pipeline). The code also addresses the scenario where it is recomended to fix alter the directory structure, and reflect the right location/partition. This option is recommended when the amount of data to be processed is big (eg. initial load). 
 
 #### Write to silver
 
