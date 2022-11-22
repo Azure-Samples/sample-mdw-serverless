@@ -3,6 +3,9 @@ import azure.functions as func
 from azure.storage.blob import BlobServiceClient
 import io
 import uuid
+from datetime import datetime, timedelta
+from azure.storage.blob import ResourceTypes, AccountSasPermissions, generate_account_sas
+
 
 def validate_input(source_container, target_container, source_cs, target_cs ):
     '''
@@ -49,19 +52,28 @@ def main(req: func.HttpRequest) -> func.HttpResponse:
 
         source_container_client = blob_service_source.get_container_client(container = source_container)
         target_container_client = blob_service_target.get_container_client(container = target_container) 
-        source_details = source_container_client.get_account_information()
-        print(f"these are the details:{source_details}")
+        # getting the list of blobs to copy. note, this is not the most effective way, in case there over 100 files.
         blob_list = source_container_client.list_blobs()
+        # since the source might be an external source, we will need to add to the uri a token, even for a read
+        sas_token = generate_account_sas(
+            source_container_client.account_name,
+            account_key=source_container_client.credential.account_key,
+            resource_types=ResourceTypes(object=True),
+            permission=AccountSasPermissions(read=True),
+            expiry=datetime.utcnow() + timedelta(minutes=10)
+        )
+        downloaded_files_count = 0
         for blob in blob_list:
             # checking this is not an empty file or a directory
             if blob.size > 0:
                 # getting a handle for the target blob
                 target_blob_client = target_container_client.get_blob_client(blob.name)                
-                sourceBlobUrl = (f"https://{acct_name}.blob.core.windows.net/{source_container}/{blob.name}")
-                print(sourceBlobUrl)
+                sourceBlobUrl = (f"https://{acct_name}.blob.core.windows.net/{source_container}/{blob.name}?{sas_token}")                
                 # using the copy_from allows the calling function not to wait for compeletion, the response for this call is 202
                 target_blob_client.start_copy_from_url(sourceBlobUrl)
-        return func.HttpResponse(f"Copied files from source: {source_container} to target:{target_container}")
+                downloaded_files_count +=1
+        logging.info(f"Copied {downloaded_files_count} blobs from: {source_container}")
+        return func.HttpResponse(f"Copied {downloaded_files_count} files from source: {source_container} to target:{target_container}")
     else: 
         return func.HttpResponse("Invalid inputs", status_code=500)
     
