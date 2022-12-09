@@ -52,7 +52,7 @@ The following are the prerequisites for deploying this sample :
 
 This operation may take a few minutes to complete. Once it is finished, you can verify that the resources were created successfully by checking the resource group in the Azure portal.
 
-# Setup Synapse worksape
+### Setup Synapse worksape
 
 1. Open the newly created Synapse workspace.
 
