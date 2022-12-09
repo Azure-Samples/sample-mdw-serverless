@@ -9,7 +9,7 @@ products:
 - power-bi
 ---
 
-# Modern Data Warehouse Sample using Azure Synapse Analytics and Power BI
+# Serverless Modern Data Warehouse Sample using Azure Synapse Analytics and Power BI
 
 End-to-end sample of a serverless modern data warehouse data processing pipeline for Power BI visualization. This sample demonstrates how to build a scalable and efficient data pipeline using Azure Synapse Analytics, and how to visualize the results in Power BI.
 
