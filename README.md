@@ -139,11 +139,12 @@ Each type of file will have to be mapped at least once. While this process might
 
 #### Azure Function - Pipeline 'bron2silver - Azure Function'
 
-In some cases daily files may contain previous dates of data. In such scenarios it is recomended to fix alter the directory structure, and reflect the right location/partition.
+If you need to apply business logic to your data before storing it to the silver container, we encorage you to leverage an azure function. 
+The sample code, executed by the Azure Function, includes an example of how to move files to different target directories based on the Date value inside the files. 
 
 Read more on this function [here](./functions/getting_started.md).
 
-When calling the azure function ('bronze2silver - Azure Function' Pipeline), you would need to have the following post payload defined in the activity, using the dynamic content.
+When calling the Azure Function activity, you would need to define the following POST payload defined. Under the Settings of the function insert the following dynamic content, in the Body field.
 
 ```
 @concat('{',
@@ -158,7 +159,7 @@ When calling the azure function ('bronze2silver - Azure Function' Pipeline), you
 
 #### Notebook (Spark Pool) - Pipeline 'bron2silver - Notebook'
 
-Alternatively to the Azure Fuction, there is also the option to leverage a Notebook ('bronze2silver - Notebook' Pipeline). The code also addresses the scenario where it is recomended to fix alter the directory structure, and reflect the right location/partition. This option is recommended when the amount of data to be processed is big (eg. initial load). 
+In alternative to the Copy and Azure Function activities, you can leverage a Notebook activity to move large amounts of data. The sample code, inside the Notebook, includes an example of how to move files to different target directories based on the Date value.
 
 #### Write to silver
 
