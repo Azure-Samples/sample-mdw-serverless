@@ -9,33 +9,25 @@ products:
 - power-bi
 ---
 
-# sample-mdw-serverless
+# Modern Data Warehouse Sample using Azure Synapse Analytics and Power BI
 
-End to end sample of data processing to be viewed in pbi.
+End-to-end sample of a serverless modern data warehouse data processing pipeline for Power BI visualization. This sample demonstrates how to build a scalable and efficient data pipeline using Azure Synapse Analytics, and how to visualize the results in Power BI.
 
 ## Use Case
 
-Contoso is an organization with multiple factories and multiple data models. Each factory upload data periodically to a storage account. Contoso is looking for cost-effective solution, which will be able to provide their analytical team a better view of the data.
+An organization with multiple factories and multiple data models is looking for a cost-effective solution that will provide their analytical team a cost-effective solution to analyse the data from all the factories. The factories periodically upload data into a storage account and the team is looking for an solution to analyse all this data from all the factories in a report.
 
-Contoso already developed a component named ControlBox, its capabilities (out of scope for this sample) are:
+An organization with multiple factories and data models is looking for a cost-effective solution that will allow their analytical team to combine and analyze data from all the factories in a single report. The factories periodically upload data to a storage account, and the solution should be able to process this data and provide insights to the analytical team.
 
-- Authenticate and authorize factories.
+The mechanism that authenticates the factories and allows them to upload data to the storage account, as well as the mechanism that controls which files have been processed, are out of scope for this sample. We recommend creating separate components for authentication and authorization, and for tracking the files to be processed.
 
-- Provide factories with SAS token, used by the factory to upload periodic data.
-
-- Register new file uploaded in the storage account in a control table.
-
-- Update the control table each time a file is processed.
-
-## Architecture
-
-The following diagram illustrates the solution implemented by Contoso. It leverages serverless computing for data movement, cleansing, restructure and reporting.
+## Architecture Diagram
 
 ![architecture](./images/art.png)
 
 ## Working with this sample
 
-As part of the sample we included bicep code, which will create the minimum required resources for it to run.
+As part of this sample, we have included Bicep code that will deploy the minimum required Azure resources for the sample to run.
 
 ### Prerequisites
 
@@ -47,47 +39,51 @@ The following are the prerequisites for deploying this sample :
 
 > Note: Using PowerBI is an optional way to visulize data.
 
-### Setup and deployment
+### Deployment of the Azure resources
 
-1. Create a resource group in which the resources would be created.
+1. Create a resource group in Azure where the sample resources will be deployed.
 
-2. Clone or fork this repository.
+1. Clone or fork this repository and navigate to the ```sample-mdw-serverless/deploy/bicep``` folder.
 
-3. Edit ```deploy/bicep/param.json``` file and provide your values, they should be self explained.
+1. Open the ```param.json``` file and provide your own values for the parameters. The ```suffix``` parameter will be used to create unique names for the Synapse and storage instances in Azure, so make sure to choose a value that is not already in use. The default setup is for a publicly accessible solution, so the startIP and endIP parameters allow access to Synapse from any IP address.
 
-    > Note: The ```suffix``` will be used to create the synapse and the storage instances with a unique namespace in Azure. If the suffix is already in use, please choose another one.
+1. Open a command line and run the following command to deploy the sample resources to Azure:
+```az deployment group create --resource-group <your-resource-group-name> --template-file main.bicep --parameters @param.json```
 
-    > Another Note: The default setup is for publicly open solution. This is the reason start and stop IPs allow for any IP address access to Synapse.
+This operation may take a few minutes to complete. Once it is finished, you can verify that the resources were created successfully by checking the resource group in the Azure portal.
 
-4. Open a command line, go to  'sample-mdw-serverless/deploy/bicep' and run ```az deployment group create --resource-group <your rg name> --template-file main.bicep --parameters @param.json``` on the 'bicep' folder. This operation may take a few minutes to complete.
+# Setup Synapse worksape
 
-5. Open the newly created Synapse workspace.
+1. Open the newly created Synapse workspace.
 
-6. Point the Synapse workspace to the cloned/forked repository as shown in this [document](https://docs.microsoft.com/en-us/azure/synapse-analytics/cicd/source-control).
+1. Point the Synapse workspace to the cloned/forked repository using the repository link as shown in this [document](https://docs.microsoft.com/en-us/azure/synapse-analytics/cicd/source-control). 
 
-7. In the workspace, go to Manage > Linked Services > medallion_storage > Parameters > suffix and the same value you gave in the bicep ```param.json```. Once you update it would be reflected in all affected integration datasets.
+1. In the Azure Synapse workspace, go to the Manage > Linked Services > medallion_storage > Parameters > suffix, and enter the same value that you used for the suffix parameter in the ```param.json``` file in the Bicep code. This will update the linked services and integration datasets that use the suffix value.
 
     ![linked service](./images/linked_service_update.png)
 
-8. Run the 'Copy Data Samples' pipeline. This will copy the [control file](#control/table) and the [data samples](#sample-files) to your local repository. [See details.](#sample-files)
+1. Run the 'Copy Data Samples' pipeline. This will copy the [control file](#control/table) and the [data samples](#sample-files) to your local repository. [See details.](#sample-files)
      > Note: You can use the ```Debug``` to get started quickly, or setup a trigger as described [here](https://docs.microsoft.com/en-us/azure/data-factory/concepts-pipeline-execution-triggers).
 
 
-9. Run the 'Process Factories Data'. This will run the Bronze to Silver transformations per factory and per data model. [See details.](#bronze-to-silver)
+1. Run the 'bronze2silver - Copy' pipeline. This will run the Bronze to Silver transformations per factory and per data model. [See details.](#bronze-to-silver)
 
-10. Go to and Develop > SQL Scrips > Factories and open the ```InitDB``` script.
+1. Go to Develop > SQL Scrips > Factories and open the ```InitDB``` script.
 
-11. Run the first commands against the ```master``` database.
+1. Run the first commands against the ```master``` database.
 
-12. Run the remaining commands by order against the newly created DB. This pipeline will run the silver to gold data transformations. [See details.](#silver-to-gold)
+1. Run the remaining commands by order against the newly created DB. This pipeline will run the silver to gold data transformations. [See details.](#silver-to-gold)
 
-13. Open the ```Create-External-Tables``` script, replace the ```suffix``` with the one used throughout the sample and the SAS token to access your storage account. Run the commands by order.
+1. Open the ```Create-External-Tables``` script, replace the ```suffix``` with the value you used throughout the sample and the ```SAS token``` to access your storage account. Run the commands by order.
 
-14. Open Power BI Desktop and follow the steps in this [document](https://docs.microsoft.com/en-us/power-apps/maker/data-platform/export-to-data-lake-data-powerbi#prerequisites) to connect your Gold Data Lake storage to Power BI Desktop.
+1. Open Power BI Desktop and follow the steps in this [document](https://docs.microsoft.com/en-us/power-apps/maker/data-platform/export-to-data-lake-data-powerbi#prerequisites) to connect your Gold Data Lake storage to Power BI Desktop.
 
-15. Optionally, you can set up an automated DevOps pipeline using [these instructions](./deploy/DevOps/README.md).
+1. Optionally, you can also set up an automated DevOps pipeline using [these instructions](./deploy/DevOps/README.md).
 
 ## Details
+
+### Storage account
+
 
 ### Sample files
 
@@ -122,26 +118,26 @@ Every time a new file lands in the bronze layer, or it is processed, this table 
 
 ### Bronze to Silver
 
-The data from the different factories lands in the same storage account. The storage account has a container per layer of a Medallion Architecture, bronze, silver and gold. Inside each container there is a folder per factory, per data model and per day. See the following example:
+In the bronze2silver pipelines, a Lookup activity will read the control table entries.
+Then a ForEach avtivity, per data model, will iterate over all entries of the control table. Inside the ForEach, a IfCondition activity will filter all unprocessed files. For each unprocessed file, a Copy, a Notebook or an Azure Function activity will be executed. All these three option are explained in more detail in the next sections. We encourage you to use the pipeline that best suits your requirements. Please evaluate the available options and choose the one that meets your needs and goals in the most effective way.
 
-```<your_storage>/bronze/factory=1782/dataModelName=data_model_1/y=2022/m=07/d=24```
+All the different pipelineas are storing the files in parquet format in the silver container. 
 
-In the Synapse workspace, a Lookup activity will read the control table information.
-There is a ForEach() per data model that will iterate over all factories with unprocessed files. For each factory and data model the relevant business logic would be applied. To keep this sample more generic, the files are just copied from bronze to silver and converted to a parquet format.
+#### Copy Activity - Pipeline 'bron2silver - Copy'
 
+This pipeline leverages a Copy activity to copy the files from bronze to silver container. 
 ![pipeline](./images/factories_pipeline.PNG)
 
 Inside each ForEach() activity, there is a IfCondition() activity, which filters the unprocessed data for specific data model.
 
-#### Mapping
+##### Copy activity Mapping
+In order to extract the nested JSON values you will have to map these values to a type in the Mapping tab of the Copy() activity.
 
 Each type of file will have to be mapped at least once. While this process might be tedious, you will need to spend time on it, to ensure that all the necessary fields are assigned to right type and saved during the sink. Additional fields (e.g calculated/derived) can also be added in this tab.
 
 ![mapping](./images/mapping.png)
 
-> As for time, in order to extract the nested JSON values you will have to map these values to a type in the Mapping tab of the Copy() activity.
-
-#### Using Azure Function
+#### Azure Function - Pipeline 'bron2silver - Azure Function'
 
 In some cases daily files may contain previous dates of data. In such scenarios it is recomended to fix alter the directory structure, and reflect the right location/partition.
 
@@ -149,7 +145,7 @@ Read more on this function [here](./functions/getting_started.md).
 
 When calling the azure function ('bronze2silver - Azure Function' Pipeline), you would need to have the following post payload defined in the activity, using the dynamic content.
 
-```json
+```
 @concat('{',
         '"file_name"',':','"',item().FileLocation,'/daily.zip"', ',',
         '"source_container"',':','"',pipeline().parameters.source_container,'"', ',',
@@ -160,7 +156,7 @@ When calling the azure function ('bronze2silver - Azure Function' Pipeline), you
         )
 ```
 
-#### Using Notebook (Spark Pool)
+#### Notebook (Spark Pool) - Pipeline 'bron2silver - Notebook'
 
 Alternatively to the Azure Fuction, there is also the option to leverage a Notebook ('bronze2silver - Notebook' Pipeline). The code also addresses the scenario where it is recomended to fix alter the directory structure, and reflect the right location/partition. This option is recommended when the amount of data to be processed is big (eg. initial load). 
 
