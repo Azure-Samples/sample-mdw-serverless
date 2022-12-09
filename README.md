@@ -76,7 +76,7 @@ This operation may take a few minutes to complete. Once it is finished, you can 
 
 1. Open the ```Create-External-Tables``` script, replace the ```suffix``` with the value you used throughout the sample and the ```SAS token``` to access your storage account. Run the commands by order.
 
-1. Open Power BI Desktop and follow the steps in this [document](https://docs.microsoft.com/en-us/power-apps/maker/data-platform/export-to-data-lake-data-powerbi#prerequisites) to connect your Gold Data Lake storage to Power BI Desktop.
+1. Open Power BI Desktop and follow the steps in this [document](https://docs.microsoft.com/en-us/power-apps/maker/data-platform/export-to-data-lake-data-powerbi#prerequisites) to connect your Gold Data Lake storage to Power BI Desktop to vizualize de data. 
 
 1. Optionally, you can also set up an automated DevOps pipeline using [these instructions](./deploy/DevOps/README.md).
 
@@ -248,5 +248,3 @@ CREATE EXTERNAL TABLE table_name
     ) AS [result]
 
 ```
-
-After this activity is completed, you can access the table using the serverless SQL pool, or from [Power BI](https://docs.microsoft.com/en-us/power-apps/maker/data-platform/export-to-data-lake-data-powerbi#prerequisites).
