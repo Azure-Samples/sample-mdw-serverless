@@ -128,16 +128,16 @@ Follow the steps bellow to create your CD pipeline:
 1. Add the artifact and select your CI pipeline as source.
 
 1. In the stage view, select View stage tasks. Add a Synapse deployment task.
-    ![synapse_deployment](.\synapse_deployment.PNG)
+    ![synapse_deployment](synapse_deployment.PNG)
 
 1. Override the parameters used by the pipeline _and_ the SQL scripts.
 
-    ![override_parameters](.\override_parameters.PNG)
+    ![override_parameters](override_parameters.PNG)
 
 1. Configure the Continuous deployment trigger.
 
-    ![CD_pipeline_trigger](./CD_pipeline_trigger.PNG)
+    ![CD_pipeline_trigger](CD_pipeline_trigger.PNG)
 
 1. Configure the Pre-deployment conditions.
 
-    ![pre_deployment_conditions](./pre_deployment_conditions.PNG)
+    ![pre_deployment_conditions](pre_deployment_conditions.PNG)
