@@ -31,7 +31,7 @@ Contoso already developed a component named ControlBox, its capabilities (out of
 
 The following diagram illustrates the solution implemented by Contoso. It leverages serverless computing for data movement, cleansing, restructure and reporting.
 
-![architecture](./images/art.png)
+![architecture](./images/architecture_diagram_mdw_serverless.png)
 
 ## Working with this sample
 
