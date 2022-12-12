@@ -72,9 +72,9 @@ This operation may take a few minutes to complete. Once it is finished, you can 
 
 1. Run the first commands against the ```master``` database.
 
-1. Run the remaining commands by order against the newly created DB. This pipeline will run the silver to gold data transformations. [See details.](#silver-to-gold)
+1. Run the remaining commands by order against the newly created DB. [See details.](#silver-to-gold)
 
-1. Open the ```Create-External-Tables``` script, replace the ```suffix``` with the value you used throughout the sample and the ```SAS token``` to access your storage account. Run the commands by order.
+1. Open the ```Create-External-Tables``` script, replace the ```suffix``` with the value you used throughout the sample and the ```SAS token``` to access your storage account and run the commands by order. This will create your gold tables. 
 
 1. Open Power BI Desktop and follow the steps in this [document](https://docs.microsoft.com/en-us/power-apps/maker/data-platform/export-to-data-lake-data-powerbi#prerequisites) to connect your Gold Data Lake storage to Power BI Desktop to vizualize de data. 
 
@@ -93,12 +93,6 @@ The sample files consist of daily dropped data in zip format. Each zip file cont
 {"dataModelName":"data_model_1","operation":"U","factory":1354010702,"lineId":14871,"date":"2022-06-22T00:00:00","feature1":1,"dim":73,"yield":37307}
 {"dataModelName":"data_model_1","operation":"U","factory":1354010702,"lineId":14872,"date":"2022-06-22T00:00:00","feature1":1,"dim":73,"yield":37306}
 {"dataModelName":"data_model_1","operation":"U","factory":1354010702,"lineId":14873,"date":"2022-06-23T00:00:00","feature1":1,"dim":73,"yield":37305}
-{"dataModelName":"data_model_1","operation":"U","factory":1354010702,"lineId":14874,"date":"2022-06-23T00:00:00","feature1":1,"dim":73,"yield":37304}
-{"dataModelName":"data_model_1","operation":"U","factory":1354010702,"lineId":14875,"date":"2022-06-23T00:00:00","feature1":1,"dim":73,"yield":37303}
-{"dataModelName":"data_model_1","operation":"U","factory":1354010702,"lineId":14876,"date":"2022-06-24T00:00:00","feature1":1,"dim":73,"yield":37302}
-{"dataModelName":"data_model_1","operation":"U","factory":1354010702,"lineId":14877,"date":"2022-06-24T00:00:00","feature1":1,"dim":73,"yield":37307}
-{"dataModelName":"data_model_1","operation":"U","factory":1354010702,"lineId":14878,"date":"2022-06-24T00:00:00","feature1":1,"dim":73,"yield":37300}
-
 ```
 
 ### Control Table
@@ -116,31 +110,40 @@ Every time a new file lands in the bronze layer, or it is processed, this table 
 
 > Note: To keep this sample simple, the control information was hardcoded in a JSON file named dropped_files.json (manual edit to the control JSON file can be done directly from the portal). However, for production this is an anti-pattern and we strongly advise using a metadata table and a process to automatically update it.
 
-### Bronze to Silver
+### Bronze to Silver Pipeline
 
 In the bronze2silver pipelines, a Lookup activity will read the control table entries.
 Then a ForEach avtivity, per data model, will iterate over all entries of the control table. Inside the ForEach, a IfCondition activity will filter all unprocessed files. For each unprocessed file, a Copy, a Notebook or an Azure Function activity will be executed. All these three option are explained in more detail in the next sections. We encourage you to use the pipeline that best suits your requirements. Please evaluate the available options and choose the one that meets your needs and goals in the most effective way.
 
-All the different pipelineas are storing the files in parquet format in the silver container. 
+All the different bronze2silver pipelines are storing the files in the silver container in the parquet format, and preserving the original directory structure. The parquet files can be queried using Synapse Serverless SQL Pool. For example, you could use the following query to access the data stored in the silver container:
+
+```sql
+select * 
+FROM
+    OPENROWSET(
+        BULK 'https://<storage-account-name>.dfs.core.windows.net/<container>/<folder>/**',
+        FORMAT = 'PARQUET'
+    ) AS [result]
+```
 
 #### Copy Activity - Pipeline 'bron2silver - Copy'
 
 This pipeline leverages a Copy activity to copy the files from bronze to silver container. 
-![pipeline](./images/factories_pipeline.PNG)
 
-Inside each ForEach() activity, there is a IfCondition() activity, which filters the unprocessed data for specific data model.
+![pipeline](./images/factories_pipeline.png)
+
+There is a ForEach activity for each of the data models. Inside each ForEach activity, there is an IfCondition activity that filters the data records that have not yet been processed. The unprocessed data records are then copied to the sink container by applying minimal business logic using the Mapping tab of the Copy activity.
 
 ##### Copy activity Mapping
-In order to extract the nested JSON values you will have to map these values to a type in the Mapping tab of the Copy() activity.
 
-Each type of file will have to be mapped at least once. While this process might be tedious, you will need to spend time on it, to ensure that all the necessary fields are assigned to right type and saved during the sink. Additional fields (e.g calculated/derived) can also be added in this tab.
+In order to extract the nested JSON values, you will need to map them to a type in the Mapping tab of the Copy activity. Each type of file will require its own mapping, which can be time-consuming but is necessary to ensure that all necessary fields are assigned the correct type and saved during the sink operation. Additionally, you can use the Mapping tab to add additional fields, such as calculated or derived fields, to the data.
 
 ![mapping](./images/mapping.png)
 
 #### Azure Function - Pipeline 'bron2silver - Azure Function'
 
 If you need to apply business logic to your data before storing it to the silver container, we encorage you to leverage an azure function. 
-The sample code, executed by the Azure Function, includes an example of how to move files to different target directories based on the Date value inside the files. 
+The sample code, executed by the Azure Function, includes an example of how to move files to different target directories based on the Date value inside the files. This can be useful for organizing your data and making it easier to access later.
 
 Read more on this function [here](./functions/getting_started.md).
 
@@ -161,26 +164,26 @@ When calling the Azure Function activity, you would need to define the following
 
 In alternative to the Copy and Azure Function activities, you can leverage a Notebook activity to move large amounts of data. The sample code, inside the Notebook, includes an example of how to move files to different target directories based on the Date value.
 
-#### Write to silver
+> Note: This option will require you to create a Spark Pool.
+  
+### Silver to Gold Pipeline
 
-The linked service to the storage account is used to write the files to the silver container and save the data in a parquet format. The original directory structure is kept.
+The silver to gold pipeline is the process that creates the files in the gold container to then be visualized in Power BI. This is achieved by leveraging the serverless SQL pool. In order to create the gold files, we will explore in more detail the folloing options: using a serverless stored procedure or using external tables. Overall, both options provide a way to create the gold tables within the database using the data that is generated in the silver to gold pipeline. The choice between using a serverless store procedure or external tables would depend on the specific requirements and constraints of your application.
 
-The parquet files can be queried using Synapse Serverless SQL Pool. See the following example:
 
-```sql
-select * 
-FROM
-    OPENROWSET(
-        BULK 'https://<storage-account-name>.dfs.core.windows.net/<container>/<folder>/**',
-        FORMAT = 'PARQUET'
-    ) AS [result]
-```
+#### Serverless Stored Procedure or Copy Activity - Pipeline 'silver2gold'
 
-### Silver to Gold
+In the silver to gold pipeline, a copy activity or a serverless store procedure activity is used to create the gold tables. The copy activity uses a query to aggregate data from the silver tables and insert it into the gold tables, while the serverless store procedure activity executes the necessary SQL commands to define and populate the gold tables. A control table is used to build the aggregations queries to be performed by the pipeline. This information is used by both approaches.
 
-As described in this [document](https://docs.microsoft.com/en-us/azure/synapse-analytics/sql/develop-tables-cetas) there are few initialization activities. In the following sections, a Serverless SQL pool is used.
+#### External tables - SQL scripts
 
-#### Create a Database, master key & scoped credentials
+An [external table](https://docs.microsoft.com/en-us/azure/synapse-analytics/sql/develop-tables-cetas) is a table that is defined within the database, but the data for the table is stored outside of the database in a flat file. In the case of the silver to gold pipeline, the files that are created in the gold container. This would allow the database to access and query the data in the gold container as if it were a regular table within the database.
+
+Overall, both options provide a way to create the gold tables within the database using the data that is generated in the silver to gold pipeline. The choice between using a serverless store procedure or external tables would depend on the specific requirements and constraints of the system.
+
+##### Create a database, master key & scoped credentials
+
+The following script provides a way to create a database and the necessary security components and can be found under Develop > SQL scripts > factories > InitDB:
 
 ```sql
 -- Create a DB
@@ -191,22 +194,15 @@ CREATE MASTER KEY ENCRYPTION BY PASSWORD = '<password>';
 CREATE DATABASE SCOPED CREDENTIAL [factories_cred]
 WITH IDENTITY='SHARED ACCESS SIGNATURE',  
 SECRET = ''
-
 ```
 
-In order to create SAS token, you can follow this [document](https://docs.microsoft.com/en-us/azure/cognitive-services/translator/document-translation/create-sas-tokens?tabs=Containers). Alternate solution in case you want one scoped credentials that can be used for the entire storage account. This can be created using the portal:
-
-- Click on 'Shared Access Signature' in the Security + Networking blads:
-
-![blade](./images/blade.png)
-
-- Select required operation, IP restrictions, dates etc:
+If you want to create SAS tokens for your Azure storage containers, you can follow the steps provided in the linked [section](https://learn.microsoft.com/en-us/azure/cognitive-services/translator/document-translation/create-sas-tokens?tabs=Containers#create-sas-tokens-in-the-azure-portal). 
 
 ![sas](./images/sas.png)
 
-#### Create External File format
+#### Create External File Format
 
-The following statement needs to be executed once per workspace:
+The script provided bellow, is used to create an external file format. An external file format defines the format, structure, and encoding of data stored in external files. In this case, the script creates an external file format named SynapseParquetFormat with the format type set to PARQUET.
 
 ```sql
 IF NOT EXISTS (SELECT * FROM sys.external_file_formats WHERE name = 'SynapseParquetFormat') 
@@ -217,7 +213,7 @@ GO
 
 #### Create External Source
 
-The following is creating an external data source, which will host the gold tables.
+The script provided below, is used to create an external data source. An external data source defines a connection to data stored outside of the database in an external location, such as a container in storage account. In this case, the script creates an external data source named gold that points to the specified gold container in an Azure storage account.
 
 ```sql
 IF NOT EXISTS (SELECT * FROM sys.external_data_sources WHERE name = 'gold') 
@@ -228,9 +224,9 @@ IF NOT EXISTS (SELECT * FROM sys.external_data_sources WHERE name = 'gold')
 GO
 ```
 
-#### Create external table
+#### Create External Table
 
-Finally lets make use of the resources and data created, by creating the external table, this sample is essentially coping the entire content of all parquet files into a single table, this is the place where additional aggregations, filtering can be applied.
+The script provided below, is used to create an external table. An external table is a table that is defined within the database, but the data for the table is stored outside of the database in an external location. In this case, the script creates an external table named table_name that is populated with data from the specified location within the gold container in the storage account.
 
 ```sql
 CREATE EXTERNAL TABLE table_name
