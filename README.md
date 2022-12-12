@@ -23,7 +23,7 @@ The mechanism that authenticates the factories and allows them to upload data to
 
 ## Architecture Diagram
 
-![architecture](./images/art.png)
+![architecture](./images/architecture_diagram_mdw_serverless.png)
 
 ## Working with this sample
 
