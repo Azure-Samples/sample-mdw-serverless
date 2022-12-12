@@ -15,7 +15,7 @@ End-to-end sample of a serverless modern data warehouse data processing pipeline
 
 ## Use Case
 
-An organization with multiple factories and multiple data models is looking for a cost-effective solution that will provide their analytical team a cost-effective solution to analyse the data from all the factories. The factories periodically upload data into a storage account and the team is looking for an solution to analyse all this data from all the factories in a report.
+An organization with multiple factories and multiple data models is looking for a cost-effective solution that will provide their analytical team a cost-effective solution to analyze the data from all the factories. The factories periodically upload data into a storage account and the team is looking for an solution to analyze all this data from all the factories in a report.
 
 An organization with multiple factories and data models is looking for a cost-effective solution that will allow their analytical team to combine and analyze data from all the factories in a single report. The factories periodically upload data to a storage account, and the solution should be able to process this data and provide insights to the analytical team.
 
@@ -37,7 +37,7 @@ The following are the prerequisites for deploying this sample :
 - [Bicep](https://docs.microsoft.com/en-us/azure/azure-resource-manager/bicep/install/)
 - [Power BI Desktop](https://powerbi.microsoft.com/en-gb/desktop/)
 
-> Note: Using PowerBI is an optional way to visulize data.
+> Note: Using PowerBI is an optional way to visualize data.
 
 ### Deployment of the Azure resources
 
@@ -56,34 +56,32 @@ This operation may take a few minutes to complete. Once it is finished, you can 
 
 1. Open the newly created Synapse workspace.
 
-1. Point the Synapse workspace to the cloned/forked repository using the repository link as shown in this [document](https://docs.microsoft.com/en-us/azure/synapse-analytics/cicd/source-control). 
+1. Point the Synapse workspace to the cloned/forked repository using the repository link as shown in this [document](https://docs.microsoft.com/en-us/azure/synapse-analytics/cicd/source-control).
 
 1. In the Azure Synapse workspace, go to the Manage > Linked Services > medallion_storage > Parameters > suffix, and enter the same value that you used for the suffix parameter in the ```param.json``` file in the Bicep code. This will update the linked services and integration datasets that use the suffix value.
 
     ![linked service](./images/linked_service_update.png)
 
-1. Run the 'Copy Data Samples' pipeline. This will copy the [control file](#control/table) and the [data samples](#sample-files) to your local repository. [See details.](#sample-files)
+1. Run the 'Copy Data Samples' pipeline. This will copy the [control file](#control-table) and the [data samples](#sample-files) to your local repository. [See details.](#sample-files)
      > Note: You can use the ```Debug``` to get started quickly, or setup a trigger as described [here](https://docs.microsoft.com/en-us/azure/data-factory/concepts-pipeline-execution-triggers).
 
-
-1. Run the 'bronze2silver - Copy' pipeline. This will run the Bronze to Silver transformations per factory and per data model. [See details.](#bronze-to-silver)
+1. Run the 'bronze2silver - Copy' pipeline. This will run the Bronze to Silver transformations per factory and per data model. [See details.](#bronze-to-silver-pipeline)
 
 1. Go to Develop > SQL Scrips > Factories and open the ```InitDB``` script.
 
 1. Run the first commands against the ```master``` database.
 
-1. Run the remaining commands by order against the newly created DB. [See details.](#silver-to-gold)
+1. Run the remaining commands by order against the newly created DB. [See details.](#silver-to-gold-pipeline)
 
-1. Open the ```Create-External-Tables``` script, replace the ```suffix``` with the value you used throughout the sample and the ```SAS token``` to access your storage account and run the commands by order. This will create your gold tables. 
+1. Open the ```Create-External-Tables``` script, replace the ```suffix``` with the value you used throughout the sample and the ```SAS token``` to access your storage account and run the commands by order. This will create your gold tables.
 
-1. Open Power BI Desktop and follow the steps in this [document](https://docs.microsoft.com/en-us/power-apps/maker/data-platform/export-to-data-lake-data-powerbi#prerequisites) to connect your Gold Data Lake storage to Power BI Desktop to vizualize de data. 
+1. Open Power BI Desktop and follow the steps in this [document](https://docs.microsoft.com/en-us/power-apps/maker/data-platform/export-to-data-lake-data-powerbi#prerequisites) to connect your Gold Data Lake storage to Power BI Desktop to visualize de data.
 
 1. Optionally, you can also set up an automated DevOps pipeline using [these instructions](./deploy/DevOps/README.md).
 
 ## Details
 
 ### Storage account
-
 
 ### Sample files
 
@@ -113,7 +111,7 @@ Every time a new file lands in the bronze layer, or it is processed, this table 
 ### Bronze to Silver Pipeline
 
 In the bronze2silver pipelines, a Lookup activity will read the control table entries.
-Then a ForEach avtivity, per data model, will iterate over all entries of the control table. Inside the ForEach, a IfCondition activity will filter all unprocessed files. For each unprocessed file, a Copy, a Notebook or an Azure Function activity will be executed. All these three option are explained in more detail in the next sections. We encourage you to use the pipeline that best suits your requirements. Please evaluate the available options and choose the one that meets your needs and goals in the most effective way.
+Then a ForEach activity, per data model, will iterate over all entries of the control table. Inside the ForEach, a IfCondition activity will filter all unprocessed files. For each unprocessed file, a Copy, a Notebook or an Azure Function activity will be executed. All these three option are explained in more detail in the next sections. We encourage you to use the pipeline that best suits your requirements. Please evaluate the available options and choose the one that meets your needs and goals in the most effective way.
 
 All the different bronze2silver pipelines are storing the files in the silver container in the parquet format, and preserving the original directory structure. The parquet files can be queried using Synapse Serverless SQL Pool. For example, you could use the following query to access the data stored in the silver container:
 
@@ -128,7 +126,7 @@ FROM
 
 #### Copy Activity - Pipeline 'bron2silver - Copy'
 
-This pipeline leverages a Copy activity to copy the files from bronze to silver container. 
+This pipeline leverages a Copy activity to copy the files from bronze to silver container.
 
 ![pipeline](./images/factories_pipeline.png)
 
@@ -142,7 +140,7 @@ In order to extract the nested JSON values, you will need to map them to a type 
 
 #### Azure Function - Pipeline 'bron2silver - Azure Function'
 
-If you need to apply business logic to your data before storing it to the silver container, we encorage you to leverage an azure function. 
+If you need to apply business logic to your data before storing it to the silver container, we encourage you to leverage an azure function.
 The sample code, executed by the Azure Function, includes an example of how to move files to different target directories based on the Date value inside the files. This can be useful for organizing your data and making it easier to access later.
 
 Read more on this function [here](./functions/getting_started.md).
@@ -160,7 +158,7 @@ When calling the Azure Function activity, you would need to define the following
         )
 ```
 
-#### Notebook (Spark Pool) - Pipeline 'bron2silver - Notebook'
+#### Notebook (Spark Pool) - Pipeline 'bronze2silver - Notebook'
 
 In alternative to the Copy and Azure Function activities, you can leverage a Notebook activity to move large amounts of data. The sample code, inside the Notebook, includes an example of how to move files to different target directories based on the Date value.
 
@@ -168,8 +166,7 @@ In alternative to the Copy and Azure Function activities, you can leverage a Not
   
 ### Silver to Gold Pipeline
 
-The silver to gold pipeline is the process that creates the files in the gold container to then be visualized in Power BI. This is achieved by leveraging the serverless SQL pool. In order to create the gold files, we will explore in more detail the folloing options: using a serverless stored procedure or using external tables. Overall, both options provide a way to create the gold tables within the database using the data that is generated in the silver to gold pipeline. The choice between using a serverless store procedure or external tables would depend on the specific requirements and constraints of your application.
-
+The silver to gold pipeline is the process that creates the files in the gold container to then be visualized in Power BI. This is achieved by leveraging the serverless SQL pool. In order to create the gold files, we will explore in more detail the following options: using a serverless stored procedure or using external tables. Overall, both options provide a way to create the gold tables within the database using the data that is generated in the silver to gold pipeline. The choice between using a serverless store procedure or external tables would depend on the specific requirements and constraints of your application.
 
 #### Serverless Stored Procedure or Copy Activity - Pipeline 'silver2gold'
 
@@ -196,7 +193,7 @@ WITH IDENTITY='SHARED ACCESS SIGNATURE',
 SECRET = ''
 ```
 
-If you want to create SAS tokens for your Azure storage containers, you can follow the steps provided in the linked [section](https://learn.microsoft.com/en-us/azure/cognitive-services/translator/document-translation/create-sas-tokens?tabs=Containers#create-sas-tokens-in-the-azure-portal). 
+If you want to create SAS tokens for your Azure storage containers, you can follow the steps provided in the linked [section](https://learn.microsoft.com/en-us/azure/cognitive-services/translator/document-translation/create-sas-tokens?tabs=Containers#create-sas-tokens-in-the-azure-portal).
 
 ![sas](./images/sas.png)
 
