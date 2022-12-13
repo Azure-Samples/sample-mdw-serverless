@@ -23,6 +23,8 @@ __What's covered?__
 
 - [A deeper view - Addtional Details and Considerations](#a-deeper-view---addtional-details-and-considerations)
 
+- [DevOps CI/CD](./deploy/DevOps/README.md) - how to setup CI/CD for the sample.
+
 - [Out of scope](#out-of-scope)
 
 
@@ -60,7 +62,7 @@ There are two methods we can use to implement this pipeline: using a serverless 
 
 ### Power BI
 
-
+We provide instructions on how to query data using PowerBi.
 
 ## Working with this sample
 
@@ -117,8 +119,6 @@ This operation may take a few minutes to complete. Once it is finished, you can 
 1. Optionally, you can also set up an automated DevOps pipeline using [these instructions](./deploy/DevOps/README.md).
 
 ## A deeper view - Addtional Details and Considerations
-
-### Storage account
 
 ### Sample files
 
