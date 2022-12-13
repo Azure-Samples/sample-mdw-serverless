@@ -13,17 +13,54 @@ products:
 
 End-to-end sample of a serverless modern data warehouse data processing pipeline for Power BI visualization. This sample demonstrates how to build a scalable and efficient data pipeline using Azure Synapse Analytics, and how to visualize the results in Power BI.
 
+__What's covered?__
+
+- [Use Case](#use-case) - review the potential scenario for this sample.
+
+- [Architecture Diagram](#architecture-diagram) - high level architecture diagram.
+
+- [Working with this sample](#working-with-this-sample) - step by step instructions to deploy the sample.
+
+- [A deeper view - Addtional Details and Considerations](#a-deeper-view---addtional-details-and-considerations)
+
+- [Out of scope](#out-of-scope)
+
+
 ## Use Case
 
-An organization with multiple factories and multiple data models is looking for a cost-effective solution that will provide their analytical team a cost-effective solution to analyze the data from all the factories. The factories periodically upload data into a storage account and the team is looking for an solution to analyze all this data from all the factories in a report.
-
 An organization with multiple factories and data models is looking for a cost-effective solution that will allow their analytical team to combine and analyze data from all the factories in a single report. The factories periodically upload data to a storage account, and the solution should be able to process this data and provide insights to the analytical team.
-
-The mechanism that authenticates the factories and allows them to upload data to the storage account, as well as the mechanism that controls which files have been processed, are out of scope for this sample. We recommend creating separate components for authentication and authorization, and for tracking the files to be processed.
 
 ## Architecture Diagram
 
 ![architecture](./images/architecture_diagram_mdw_serverless.png)
+
+### Storage
+
+The data lake is a storage account with hierarchical namespace that is used to store data files. The medalion concept is used to track the progress of data as it flows through the solution.
+
+### Bronze to Silver
+
+There are several ways to implement the Bronze to Silver data pipeline. In this example, we use Azure Data Factory to build the pipeline. The pipeline extracts data from the Bronze container, transforms it to the Silver schema, and stores it in the Silver container. The data is partitioned by factory, date, and data model.
+
+We demonstrate three different methods for implementing this pipeline:
+
+- Using a copy activity to copy the data from the Bronze container to the Silver container.
+
+- Using an Azure Function to transform the data and store it in the Silver container.
+
+- Using spark notebooks to transform the data and store it in the Silver container.
+
+> Note: The spark approach requires the use of a Spark pool, which might not be considered as a serverless solution.
+
+### Silver to Gold
+
+In data warehousing, it is common to move data from the Silver to Gold containers. This process involves extracting data from the Silver container, transforming it to the Gold schema, and storing it in the Gold container. The data is partitioned based on specific business requirements.
+
+There are two methods we can use to implement this pipeline: using a serverless stored procedure or using external tables. We demonstrate both methods in this example.
+
+### Power BI
+
+
 
 ## Working with this sample
 
@@ -79,7 +116,7 @@ This operation may take a few minutes to complete. Once it is finished, you can 
 
 1. Optionally, you can also set up an automated DevOps pipeline using [these instructions](./deploy/DevOps/README.md).
 
-## Details
+## A deeper view - Addtional Details and Considerations
 
 ### Storage account
 
@@ -241,3 +278,13 @@ CREATE EXTERNAL TABLE table_name
     ) AS [result]
 
 ```
+
+## Out of scope
+
+The following are out of scope for this sample:
+
+- The mechanism that authenticates the factories and allows them to upload data to the storage account, as well as the mechanism that controls which files have been processed, are out of scope for this sample. We recommend creating separate components for authentication and authorization, and for tracking the files to be processed.
+
+- Highly secured topology is out of scope for this sample. 
+
+- Droped files control table is out of scope for this sample.
