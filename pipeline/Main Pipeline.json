@@ -12,7 +12,13 @@
 						"referenceName": "Copy  Data Samples",
 						"type": "PipelineReference"
 					},
-					"waitOnCompletion": true
+					"waitOnCompletion": true,
+					"parameters": {
+						"control_files_location": {
+						    "value": "@createArray(\n    json('{\"file\":\"dropped_files.json\",\"target_container\":\"bronze\"}'),\n    json('{\"file\":\"gold_control_table.json\",\"target_container\":\"gold\"}')\n)",
+						    "type": "Expression"
+						}
+					}
 				}
 			},
 			{
